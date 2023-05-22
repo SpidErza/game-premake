@@ -25,16 +25,33 @@
 
 #include "raylib.h"
 #include "screens.h"
+#define NUM_FRAMES 3
 
 //----------------------------------------------------------------------------------
 // Module Variables Definition (local)
 //----------------------------------------------------------------------------------
-static int framesCounter = 0;
-static int finishScreen = 0;
+const int screenWidth = 800;
+const int screenHeight = 450;
+Sound fxButton = LoadSound("resources/buttonfx.wav");   // Load button sound
+Texture2D button = LoadTexture("resources/button.png"); // Load button texture
+
 
 //----------------------------------------------------------------------------------
 // Gameplay Screen Functions Definition
 //----------------------------------------------------------------------------------
+
+float frameHeight = (float)button.height / NUM_FRAMES;
+Rectangle sourceRec = { 0, 0, (float)button.width, frameHeight };
+// Define button bounds on screen
+Rectangle btnBounds = { screenWidth / 2.0f - button.width / 2.0f, screenHeight / 2.0f - button.height / NUM_FRAMES / 2.0f, (float)button.width, frameHeight };
+
+int btnState = 0;               // Button state: 0-NORMAL, 1-MOUSE_HOVER, 2-PRESSED
+bool btnAction = false;         // Button action should be activated
+
+Vector2 mousePoint = { 0.0f, 0.0f };
+
+static int framesCounter = 0;
+static int finishScreen = 0;
 
 // Gameplay Screen Initialization logic
 void InitGameplayScreen(void)
@@ -48,6 +65,31 @@ void InitGameplayScreen(void)
 void UpdateGameplayScreen(void)
 {
     // TODO: Update GAMEPLAY screen variables here!
+	// Update
+		//----------------------------------------------------------------------------------
+	mousePoint = GetMousePosition();
+	btnAction = false;
+
+	// Check button state
+	if (CheckCollisionPointRec(mousePoint, btnBounds))
+	{
+		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) btnState = 2;
+		else btnState = 1;
+
+		if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) btnAction = true;
+	}
+	else btnState = 0;
+
+	if (btnAction)
+	{
+		PlaySound(fxButton);
+
+		// TODO: Any desired action
+	}
+
+	// Calculate button frame rectangle to draw depending on button state
+	sourceRec.y = btnState * frameHeight;
+	//----------------------------------------------------------------------------------
 
     // Press enter or tap to change to ENDING screen
     if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
@@ -63,6 +105,7 @@ void DrawGameplayScreen(void)
     // TODO: Draw GAMEPLAY screen here!
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), PURPLE);
     Vector2 pos = { 20, 10 };
+	DrawTextureRec(button, sourceRec, (Vector2){ btnBounds.x, btnBounds.y }, WHITE); // Draw button frame
     DrawTextEx(font, "GAMEPLAY SCREEN", pos, font.baseSize*3.0f, 4, MAROON);
     DrawText("PRESS ENTER or TAP to JUMP to ENDING SCREEN", 130, 220, 20, MAROON);
 }

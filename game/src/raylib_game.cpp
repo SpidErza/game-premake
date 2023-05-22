@@ -25,8 +25,10 @@
 //----------------------------------------------------------------------------------
 GameScreen currentScreen = LOGO;
 Font font = { 0 };
-Music music = { 0 };
+//Music music = { 0 };
 Sound fxCoin = { 0 };
+//Sound fxButton = { 0 };
+//Texture2D button = { 0 };
 
 //----------------------------------------------------------------------------------
 // Local Variables Definition (local to this module)
@@ -65,11 +67,13 @@ int main(void)
 
     // Load global data (assets that must be available in all screens, i.e. font)
     font = LoadFont("resources/mecha.png");
-    music = LoadMusicStream("resources/ambient.ogg");
+    //music = LoadMusicStream("resources/ambient.ogg");
     fxCoin = LoadSound("resources/coin.wav");
+	//fxButton = LoadSound("resources/buttonfx.wav");
+	//button = LoadTexture("resources/button.png");
 
-    SetMusicVolume(music, 1.0f);
-    PlayMusicStream(music);
+    //SetMusicVolume(music, 1.0f);
+    //PlayMusicStream(music);
 
     // Setup and init first screen
     currentScreen = LOGO;
@@ -102,8 +106,10 @@ int main(void)
 
     // Unload global data loaded
     UnloadFont(font);
-    UnloadMusicStream(music);
+    //UnloadMusicStream(music);
     UnloadSound(fxCoin);
+	UnloadSound(fxButton);
+	UnloadTexture(Button);
 
     CloseAudioDevice();     // Close audio context
 
@@ -218,7 +224,7 @@ static void UpdateDrawFrame(void)
 {
     // Update
     //----------------------------------------------------------------------------------
-    UpdateMusicStream(music);       // NOTE: Music keeps playing between screens
+    //UpdateMusicStream(music);       // NOTE: Music keeps playing between screens
 
     if (!onTransition)
     {
